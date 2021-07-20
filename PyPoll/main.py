@@ -1,51 +1,55 @@
 import os
 import csv
-poll_path = os.path.join("PyPoll/Resources/election_data.csv")
-#open and read csv
-with open(poll_path) as csvfile:
-    csvreader = csv.reader(csvfile, delimiter=",")
-    next(csvreader)
+
+poll_path = os.path.join('election_data.csv')
+poll_path_out= os.path.join('election_date.txt')
 
 #Variables
-votes = []
+votes = 0
 candidates = []
-counter = {"Khan": 0,"Correy": 0,"Li": 0,"O'Tooley": 0}
+candid_votes = {}
+winner =""
+win_count = 0
 
-for row in csvreader:
+with open(poll_path, newline='') as csvfile:
+    reader = csv.reader(csvfile, delimiter=",")
+    header = next(reader)
 
-     votes.append(row)
-     candidates.append(row[2])
-#Election results
+#Election Results
+    for row in reader:
+        print(". ", end=""),
+        votes = votes + 1
+        win_cand = row[2]
 
-for candidate in candidates:
-    if candidate == "Khan":
-        counter["Khan"] += 1
-    elif candidate == "Correy":
-        counter["Correy"] += 1
-    elif candidate == "Li":
-        counter["Li"] += 1
-    elif candidate == "O'Tooley":
-        counter["O'Tooley"] += 1
+        if win_cand not in candidates:
+            candidates.append(win_cand)
+            candid_votes[win_cand] = 0
 
-    votes_for_khan = int(counter["Khan"])
-    votes_for_correy = int(counter["Correy"])
-    votes_for_li = int(counter["Li"])
-    votes_for_otooley = int(counter["O'Tooley"])
+        candid_votes[win_cand] = candid_votes[win_cand] + 1
 
-    total = votes_for_khan + votes_for_correy + votes_for_li + votes_for_otooley
-    khan = (votes_for_khan / votes) * 100
-    correy = (votes_for_correy / votes) * 100
-    li = (votes_for_li / votes) * 100
-    otooley = (votes_for_otooley/votes) *100
+election_results =(
+    f"\n\nElection Results\n"
+    f"--------------------\n"
+    f"Total Votes: {votes}\n"
+    f"---------------------\n")
+print(election_results, end="")
 
-print(f"Election Results")
-print("--------------------")
-print(f"Total Votes: {len(votes)}")
-print("---------------------")
-print(f"Khan: {round(khan)} ({counter['Khan']})")
-print(f"Correy: {round(correy)} ({counter['Correy']})")
-print(f"Li: {round(li)} ({counter['Li']})")
-print(f"P'Tooley: {round(otooley)} ({counter['OTooley']})")
-print("----------------------")
-print(f"winner: Khan")
-print("-----------------------")
+#Determine winner
+for candidate in candid_votes:
+        all_votes = candid_votes.get(candidate)
+        vote_pctg = float(all_votes) / float(votes) * 100
+
+        if(votes > win_count) :
+            win_count = votes
+            winner = candidate
+
+output = f"{candidate}: {vote_pctg:.3f}% ({votes})\n"
+print(output, end="")
+
+final = (
+    f"----------------------\n"
+    f"Winner: {winner}\n"
+    f"-----------------------\n")
+print(final)
+
+
